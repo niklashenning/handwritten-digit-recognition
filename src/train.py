@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import pandas as pd
 from torchvision import transforms
+import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, Dataset, random_split
 from PIL import Image
 
@@ -53,6 +54,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
 epochs = 10
+losses = []
 
 for epoch in range(epochs):
     for images, labels in training_dataloader:
@@ -62,6 +64,7 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
 
+    losses.append(loss.item())
     print('Epoch [{}/{}], Loss: {:.6f}'.format(epoch + 1, epochs, loss.item()))
 
 
@@ -76,3 +79,9 @@ with torch.no_grad():
 
 accuracy = 100 * correct / validation_size
 print('Test Accuracy: {:.2f}% ({}/{})'.format(accuracy, correct, validation_size))
+
+plt.get_current_fig_manager().set_window_title('Training')
+plt.plot(range(epochs), losses)
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.show()
