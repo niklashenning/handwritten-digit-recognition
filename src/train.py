@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import pandas as pd
 from torchvision import transforms
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, random_split
 from PIL import Image
 
 
@@ -41,7 +41,12 @@ class Model(nn.Module):
 
 
 dataset = HwD1000Dataset()
-dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+training_size = int(0.8 * len(dataset))
+validation_size = len(dataset) - training_size
+training_data, validation_data = random_split(dataset, [training_size, validation_size])
+training_dataloader = DataLoader(training_data, batch_size=32, shuffle=True)
+validation_dataloader = DataLoader(validation_data, batch_size=32, shuffle=False)
 
 model = Model()
 criterion = nn.CrossEntropyLoss()
@@ -50,11 +55,11 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)
 epochs = 10
 
 for epoch in range(epochs):
-    for images, labels in dataloader:
+    for images, labels in training_dataloader:
         optimizer.zero_grad()
         outputs = model(images)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
 
-    print('Epoch {}'.format(epoch + 1))
+    print('Epoch [{}/{}], Loss: {:.6f}'.format(epoch + 1, epochs, loss.item()))
