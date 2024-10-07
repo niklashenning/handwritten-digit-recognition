@@ -63,3 +63,16 @@ for epoch in range(epochs):
         optimizer.step()
 
     print('Epoch [{}/{}], Loss: {:.6f}'.format(epoch + 1, epochs, loss.item()))
+
+
+model.eval()
+correct = 0
+
+with torch.no_grad():
+    for images, labels in validation_dataloader:
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        correct += (predicted == labels).sum().item()
+
+accuracy = 100 * correct / validation_size
+print('Test Accuracy: {:.2f}% ({}/{})'.format(accuracy, correct, validation_size))
