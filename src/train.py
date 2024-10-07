@@ -17,9 +17,9 @@ validation_dataloader = DataLoader(validation_data, batch_size=32, shuffle=False
 
 model = Model()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.AdamW(model.parameters(), lr=0.001)
 
-epochs = 10
+epochs = 50
 losses = []
 
 for epoch in range(epochs):
