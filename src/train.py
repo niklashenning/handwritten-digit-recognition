@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import pandas as pd
 from torchvision import transforms
-from torch.utils.data import Dataset
+from torch.utils.data import DataLoader, Dataset
 from PIL import Image
 
 
@@ -37,3 +38,23 @@ class Model(nn.Module):
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
+
+
+dataset = HwD1000Dataset()
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+model = Model()
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+epochs = 10
+
+for epoch in range(epochs):
+    for images, labels in dataloader:
+        optimizer.zero_grad()
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+    print('Epoch {}'.format(epoch + 1))
